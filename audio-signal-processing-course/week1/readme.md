@@ -1,12 +1,14 @@
 Audio Signal Processing. Week 1
 ============
 
-There are four parts inside this week, they rather simple but is very useful for getting used to API.
+The first week is about basic audio API. And this is what we'll try to cover here as well.
 
-Part 1
+NOTE: to use this script with WaveBeans CLI tool, you would need to add `.out()` call at the end of each output.
+
+Reading wav-file
 -----------
 
-Here you would need to write the function that simply reads the file and outputs some some sample out of it. What we can do here within WaveBeans framework is just simply read the file, get the range of it, and store it to the CSV. 
+Here you would need to write the function that simply reads the file and outputs some samples out of it. What we can do here within WaveBeans framework is just simply read the file, get the sub-range of its content, and store some samples to the CSV. 
 
 The script will look like this:
 
@@ -23,29 +25,16 @@ What is happening there:
 * The 3rd line contains the conversion of the stream into a finite stream to be able to store it to a file, it is also defined in time. You need to convert number of samples to time usig similar formula, but taking into account, that as the number of samples is too small, you may need to use different time unit, in this case it micro-seconds.
 * The 4th line defines the type of the output and the file to get output from.
 
-NOTE: to use this script with WaveBeans CLI tool, you would need to add `.out()` call at the end.
+One thing to point out regarding the output, internally WaveBeans uses 64 bit floating point representation, and input signal is normalized to the range `[-1.0, 1.0]`.
 
-For complete example and source code, take a look on [`sh` file](part1.sh)
-
-One thing to point out regarding the output, it won't be the same as the lesson provides, as internally WaveBeans uses 64 bit floating point representation, and input signal is normalized to the range `[-1.0, 1.0]`.
-
-Part 2
+Using Sequence API with WaveBeans
 ------------
 
-This part aims to find a minimum and maximum within the stream.
-
-[TODO currently not possible within WaveBeans, should it be?]
-
-Part 3
-------------
-
-This part is about using specific API within Python numpy library, not much to cover as it is related to implementation part of Audio Processing which is approach differently within WaveBeans.
-
-However, there is a way to do that, but you'll be using Kotlin Sequence API for that. WaveBeans Streams provide an interface to kotlin Sequence API which is actually is used internally. So the code would look like this:
+In Python processing you may use regular numpy API to process the sample. WaveBeans approaches such things a little different, but there is a way to do that. You'll be using Kotlin Sequence API for that. WaveBeans streams provide an interface to kotlin Sequence API which is actually is used internally. So the code would look like this:
 
 ```kotlin
 val M = 2
-val hopSamples = wave("file://${INPUT_FILE}")
+val hopSamples = wave("file:///path/to/file/here.wav")
     .trim(1)
     .asSequence(44100.0f)
     .windowed(size = M, step = M) { it.last() }
@@ -53,7 +42,9 @@ val hopSamples = wave("file://${INPUT_FILE}")
 println(hopSamples)
 ```
 
-In this example we're trying to read a file, limit its content to 1 milliseconds and the print every second sample. **NOTE: that code won't work on distributed environment, but loca one can be sufficient for a various tasks.**
+In this example we're trying to read a file, limit its content to 1 milliseconds and the print every second sample. 
+
+**NOTE: that code won't work on distributed environment, but local one can be sufficient for a variety of tasks.**
 
 Line by line explanation:
 
@@ -65,9 +56,10 @@ Line by line explanation:
 6. `toList()` is a terminal action of the sequence and hence our stream. This is where the whole defined logic starts executing and the results are stored as list. That list will be assigned to `hopSamples` variable when it finishes.
 7. Printing out the result of our execution.
 
-Part 4
+Simple Downsampling
 ------------
 
-The last part is more about reusing the part 3 code for downsampling, however you may use WaveBeans windowing to achieve similar functionality. That doesn't look simple as in the course, but downsampling overall is not a simple problem, that can't be always solved by simple filtering out elements.
+Here we'll try to use previous idea to downsample the input file. For that purpose we'll use window functions provided by WaveBeans API.
 
-[TODO downsampling using windows?]
+[TODO awaiting https://github.com/asubb/wavebeans/issues/13]
+[TODO awaiting https://github.com/asubb/wavebeans/issues/16]
