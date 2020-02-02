@@ -1,0 +1,10 @@
+# build files and IDE files
+build
+gradle
+out
+.idea
+.gradle
+
+# app run outputs
+logs/
+piano-downsampled.csv
