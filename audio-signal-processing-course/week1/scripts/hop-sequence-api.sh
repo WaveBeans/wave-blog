@@ -7,12 +7,13 @@ INPUT_FILE=$(pwd)/piano.wav
 
 # generate script file, it is just more convenient this way, however you may always specify it as inline script
 cat > script.kts <<EOF
-val M = 2
+val m = 2
 val hopSamples = wave("file://${INPUT_FILE}")
-    .trim(1)
-    .asSequence(44100.0f)
-    .windowed(size = M, step = M) { it.last() }
-    .toList()
+        .trim(1)
+        .window(m)
+        .map { it.elements.last() }
+        .asSequence(44100.0f)
+        .toList()
 println(hopSamples)
 EOF
 

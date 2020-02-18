@@ -13,10 +13,10 @@ Here you would need to write the function that simply reads the file and outputs
 The script will look like this:
 
 ```kotlin
-wave("file:///path/to/file/here.wav")
-    .rangeProjection(1133, timeUnit = MILLISECONDS)
-    .trim(226, MICROSECONDS)
-    .toCsv("file:///path/to/ouput/file/here.csv")
+wave("file:///path/to/file/here.wav")               // open the wav-file
+    .rangeProjection(1133, timeUnit = MILLISECONDS) // start reading from specific time marker
+    .trim(226, MICROSECONDS)                        // limit reading to specific time marker
+    .toCsv("file:///path/to/ouput/file/here.csv")   // store everything to CSV file
 ```
 
 What is happening there, line by line:
@@ -33,12 +33,12 @@ Using Sequence API with WaveBeans
 In Python processing you may use regular `numpy` API to work with sample arrays as with simple arrays. WaveBeans approaches such things a little different. Despite the fact it is not very correct, you may use Kotlin Sequence API for that. WaveBeans provides an interface to it which actually is used internally. So the script looks like this:
 
 ```kotlin
-val M = 2
-val hopSamples = wave("file:///path/to/file/here.wav")
-    .trim(1)
-    .asSequence(44100.0f)
-    .windowed(size = M, step = M) { it.last() }
-    .toList()
+val M = 2                                                // define the hop
+val hopSamples = wave("file:///path/to/file/here.wav")   // open the wav-file
+    .trim(1)                                             // limit reading to specific time marker
+    .asSequence(44100.0f)                                // start reading the stream with sample rate 44100Hz
+    .windowed(size = M, step = M) { it.last() }          // group samples into group of Ms and get the last of the group
+    .toList()                                            // store everything to the list
 println(hopSamples)
 ```
 
@@ -64,10 +64,11 @@ Here we'll try to use previous idea to downsample the wav file. For that purpose
 Here is how the script may look like:
 
 ```kotlin
-val downsamplingFactor = 2
-wave("file:///path/to/input/file.wav")
-    .window(downsamplingFactor).map { it.elements.last() }
-    .trim(1).toCsv("file:///path/to/output/file.csv")
+val downsamplingFactor = 2                                  // define the downsampleing factor
+wave("file:///path/to/input/file.wav")                      // open the wav-file
+    .window(downsamplingFactor).map { it.elements.last() }  // group samples and
+    .trim(1)                                                // limit reading to specific time marker
+    .toCsv("file:///path/to/output/file.csv")               // store everything to CSV file
 
 ```
 
@@ -90,7 +91,7 @@ In the script it's getting the last sample of the window, however you can define
         /* ... */.map { it.elements.sum() / it.elements.count() }
         ```
 
-4. The last two operations is to limit the amount of output to 1 millisecond and store everything to CSV file. You may try to call `toMono16bitWav()` instead, but it will store your samples as original sampling rate as it's not proper resampling mechanism for WaveBeans. But you get the idea, right?
+4. and 5. The last two operations is to limit the amount of output to 1 millisecond and store everything to CSV file. You may try to call `toMono16bitWav()` instead, but it will store your samples as original sampling rate as it's not proper resampling mechanism for WaveBeans. But you get the idea, right?
 
 Conlcusion
 -----------

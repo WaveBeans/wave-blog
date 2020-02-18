@@ -27,4 +27,11 @@ gradlew run -PmainClass="week1.DownsamplingKt"
 
 Supported main classes
 * Week 1
-    * `week1.DownsamplingKt` -- downsampling to CSV example.
+    * `week1.ReadingWavFileKt` -- reads wav-file and stores part of it as CSV.
+    * `week1.UsingSequenceApiKt` -- reads wav-file 
+    * `week1.DownsamplingKt` -- reads wav-file, downsamples it and stores to CSV.
+
+How it works
+------
+
+Each output has an extension function defined in `Helpers` file with the name `evaluate()`. It runs the specified output on Local Overseer using WaveBeans framework.
