@@ -1,8 +1,10 @@
 package week2
 
 import evaluate
+import io.wavebeans.lib.BeanStream
 import io.wavebeans.lib.io.input
 import io.wavebeans.lib.io.toCsv
+import io.wavebeans.lib.math.ComplexNumber
 import io.wavebeans.lib.math.plus
 import io.wavebeans.lib.math.r
 import io.wavebeans.lib.math.times
@@ -18,8 +20,18 @@ fun main() {
     val x = listOf(1.r, 2.r, 3.r, 4.r)
     val n = x.size
 
+    Dft(n, x)
+            .toCsv(
+                    uri = "file://${File(outputFile).absolutePath}",
+                    header = listOf("idx", "DFT value"),
+                    elementSerializer = { (idx, _, value) -> listOf(idx.toString(), value.toString()) }
+            )
+            .evaluate()
+}
+
+fun Dft(n: Int, x: List<ComplexNumber>): BeanStream<List<ComplexNumber>> {
     val signal = x.input()
-    (0 until n).map { k ->
+    return (0 until n).map { k ->
         input(GenerateComplexSineFn(k, n))
                 .merge(signal) { (sine, x) ->
                     requireNotNull(sine)
@@ -36,10 +48,4 @@ fun main() {
                     a + b
                 }
             }
-            .toCsv(
-                    uri = "file://${File(outputFile).absolutePath}",
-                    header = listOf("idx", "DFT value"),
-                    elementSerializer = { (idx, _, value) -> listOf(idx.toString(), value.toString()) }
-            )
-            .evaluate()
 }
