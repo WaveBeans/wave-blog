@@ -9,3 +9,7 @@ out
 logs/
 piano-downsampled.csv
 piano.csv
+sine.csv
+dft.csv
+complex-sine.csv
+idft.csv

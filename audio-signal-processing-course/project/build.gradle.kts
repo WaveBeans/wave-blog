@@ -26,6 +26,7 @@ apply {
 repositories {
     jcenter()
     mavenCentral()
+    mavenLocal()
     // WaveBeans is in separate maven repository
     maven {
         name = "Bintray WaveBeans"
@@ -38,8 +39,9 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // both wavebeans dependecies
-    implementation("io.wavebeans:exe:0.0.1")
-    implementation("io.wavebeans:lib:0.0.1")
+    val waveBeansVersion = "0.0.2-SNAPSHOT2"
+    implementation("io.wavebeans:exe:$waveBeansVersion")
+    implementation("io.wavebeans:lib:$waveBeansVersion")
 
     // te see some log output in `logs/` folder in case of error
     implementation("ch.qos.logback:logback-classic:1.2.3")

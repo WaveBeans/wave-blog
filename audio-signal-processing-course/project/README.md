@@ -30,6 +30,11 @@ Supported main classes
     * `week1.ReadingWavFileKt` -- reads wav-file and stores part of it as CSV.
     * `week1.UsingSequenceApiKt` -- reads wav-file 
     * `week1.DownsamplingKt` -- reads wav-file, downsamples it and stores to CSV.
+* Week 2
+    * `week2.GenerateSineKt` -- generates the sinusoid and stores it to CSV.
+    * `week2.GenerateComplexSineKt` -- generates the complex sinusoid and stores it to CSV.
+    * `week2.DftKt` -- calculates the Digital Fourier Transform over provided signal and stores results into CSV.
+    * `week2.IdftKt` -- calculates the Inverse Digital Fourier Transform over provided signal and stores results into CSV.
 
 How it works
 ------
