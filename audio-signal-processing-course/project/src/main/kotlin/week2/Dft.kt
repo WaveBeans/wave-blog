@@ -8,8 +8,10 @@ import io.wavebeans.lib.math.ComplexNumber
 import io.wavebeans.lib.math.plus
 import io.wavebeans.lib.math.r
 import io.wavebeans.lib.math.times
+import io.wavebeans.lib.stream.SampleCountMeasurement
 import io.wavebeans.lib.stream.map
 import io.wavebeans.lib.stream.merge
+import io.wavebeans.lib.stream.rangeProjection
 import io.wavebeans.lib.stream.window.window
 import java.io.File
 
@@ -17,19 +19,21 @@ import java.io.File
 fun main() {
     val outputFile = "dft.csv"
 
-    val x = listOf(1.r, 2.r, 3.r, 4.r)
-    val n = x.size
+    val x = listOf(1, 2, 3, 4, 5, 6, 7, 8)
+    val n = 4
 
-    Dft(n, x)
+    SampleCountMeasurement.registerType(List::class) { it.size }
+    dft(n, x)
+            .rangeProjection(0, x.size * 1000L)
             .toCsv(
                     uri = "file://${File(outputFile).absolutePath}",
                     header = listOf("idx", "DFT value"),
                     elementSerializer = { (idx, _, value) -> listOf(idx.toString(), value.toString()) }
             )
-            .evaluate()
+            .evaluate(1.0f)
 }
 
-fun Dft(n: Int, x: List<ComplexNumber>): BeanStream<List<ComplexNumber>> {
+fun dft(n: Int, x: List<Number>): BeanStream<List<ComplexNumber>> {
     val signal = x.input()
     return (0 until n).map { k ->
         input(GenerateComplexSineFn(k, n))
