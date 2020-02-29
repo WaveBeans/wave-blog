@@ -19,13 +19,13 @@ fun genReversedComplexSineAt(k: Int, n: Int, at: Int): ComplexNumber {
 fun main() {
     val outputFile = "idft.csv"
 
-    val x = listOf(1.r, 1.r, 1.r, 1.r)
+    val x = listOf(1, 1, 1, 1)
     val n = x.size
     val xx = (0 until n).map { x }.flatten()
     val indices = (0 until n).toList()
 
     xx.input()
-            .window(n) { 0.r }
+            .window(n) { 0 }
             .merge(indices.input()) { (x, i) ->
                 requireNotNull(x)
                 requireNotNull(i)
