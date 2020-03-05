@@ -1,9 +1,7 @@
-Audio Signal Processing. Week 1
+Week 1. Basics of Audio processing
 ============
 
 The first week is about basic audio API. And this is what we'll try to cover here as well.
-
-NOTE: to use this script with WaveBeans CLI tool, you would need to add `.out()` call at the end of each output. Follow also [CLI tool docs](https://github.com/asubb/wavebeans/tree/master/cli/docs).
 
 Reading wav-file
 -----------

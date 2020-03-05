@@ -9,14 +9,16 @@ OUTPUT_FILE=$(pwd)/sine.csv
 cat > script.kts <<EOF
 import kotlin.math.*
 
-val amplitude = 1.0
-val frequency = 10.0
-val phi = 1.0
-val offset = phi / frequency / (PI * 2.0)
-input {x, sampleRate -> sampleOf(amplitude * cos((x / sampleRate + offset) * 2 * PI * frequency))}
-    .trim(100)
-    .toCsv("file://${OUTPUT_FILE}")
-    .out()
+input { (idx, sampleRate) ->
+        val f = 10.0f
+        val a = 1.0
+        val phi = 1.0
+        val x = idx / sampleRate
+        a * cos(x * 2.0 * PI * f + phi)
+}
+        .trim(100)
+        .toCsv("file://${OUTPUT_FILE}")
+        .out()
 EOF
 
 # run the cli tool
