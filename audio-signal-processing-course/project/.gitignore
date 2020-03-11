@@ -1,0 +1,16 @@
+# build files and IDE files
+build
+gradle
+out
+.idea
+.gradle
+
+# app run outputs
+logs/
+piano-downsampled.csv
+piano.csv
+sine.csv
+dft.csv
+complex-sine.csv
+idft.csv
+magnitude.csv
