@@ -19,8 +19,6 @@ Overview
 
 This is an implementation of tasks of [Audio Signal Processing course on Coursera](https://www.coursera.org/learn/audio-signal-processing) using the WaveBeans framework. That implementation cannot replace whatever is done for the sake of completing course, however gives an idea of another implementation of provided tasks using different approach.
 
-Please follow a better explanation in [related articles](../readme.md).
-
 Prerequisites
 -----
 
@@ -41,13 +39,13 @@ Go to project directory:
 cd wave-blog/audio-signal-processing-course/project
 ```
 
-And run the following task via gradle *(it's better to use gradle wrapper)* specifying the main class parameter as one of the supported:
+And run the following task via gradle *(it's better to use gradle wrapper)* specifying the main class parameter from one of the supported:
 
 ```kotlin
 ./gradlew run -PmainClass="week1.DownsamplingKt"
 ```
 
-Supported main classes
+Supported main classes:
 * Week 1
     * `week1.ReadingWavFileKt` -- reads wav-file and stores part of it as CSV.
     * `week1.UsingSequenceApiKt` -- reads wav-file 
@@ -62,4 +60,4 @@ Supported main classes
 How it works
 ------
 
-Each output has an extension function defined in `Helpers` file with the name `evaluate()`. It runs the specified output on Local Overseer using WaveBeans framework.
+Each output has an extension function defined in `Helpers` file with the name `evaluate()`. It runs the specified output on Local Overseer using WaveBeans framework, everything else is up to [documentation](https://wavebeans.io/docs/api/)

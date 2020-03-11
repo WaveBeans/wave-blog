@@ -19,9 +19,9 @@ This is a set of articles aiming to show how you can solve problems brought up d
 
 Overall, for beginners, it is recommended to take that course, as it explains in a great way all basis of audio processing.
 
-The set of articles are provided on per week basis. Each lesson describes a problem briefly and how you may approach it using WaveBeans. All lessons can be simply launched locally via [CLI](https://wavebeans.io/docs/cli/readme.html) or [write your own application](https://wavebeans.io/wavebeans/getting_started.html). For convenience, each week has implementation as a script and gradle project.
+The set of articles are provided on per week basis. Each lesson describes a problem briefly and how you may approach it using WaveBeans. All lessons can be simply launched locally via [CLI](https://wavebeans.io/docs/cli/) or [write your own application](https://wavebeans.io/wavebeans/getting_started.html). For convenience, each week has implementation as a script and gradle project.
 
-NOTE: to use this script with WaveBeans CLI tool, you would need to add `.out()` call at the end of each output. Follow [CLI tool docs](https://wavebeans.io/docs/cli/readme.html).
+NOTE: to use this script with WaveBeans CLI tool, you would need to add `.out()` call at the end of each output. Follow [CLI tool docs](https://wavebeans.io/docs/cli/).
 
 *Disclaimer: all the rights for the course belong to its owners, that set of articles just extends whatever is covered during the course and can't substitute it in any way.*
 
@@ -40,7 +40,7 @@ Script reference implementation
 
 Script is implemented using `zsh` on MacOS X, and may work properly on Windows or Linux. 
 
-To use make sure the [CLI](https://wavebeans.io/docs/cli/readme.html) is installed and environment variable `WAVEBEANS_CLI_HOME` pointing to the its home directory, so the `$WAVEBEANS_CLI_HOME/bin/wavebeans` was pointing to correct binary file. Also make sure the kotlin is installed. Anyway follow the documentation for setting it up.
+To use make sure the [CLI](https://wavebeans.io/docs/cli/) is installed and environment variable `WAVEBEANS_CLI_HOME` pointing to the its home directory, so the `$WAVEBEANS_CLI_HOME/bin/wavebeans` was pointing to correct binary file. Also make sure the kotlin is installed. Anyway follow the documentation for setting it up.
 
 Kotlin project reference implementation
 ------

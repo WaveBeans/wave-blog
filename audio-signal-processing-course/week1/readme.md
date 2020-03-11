@@ -38,7 +38,7 @@ What is happening there, line by line:
 * Line #3. Conversion of the stream into a finite stream. It is done to be able to store it to a file, it is also defined in time units (default are milliseconds always). So, you need to convert the number of samples to time using similar formula, but, taking into account that as the number of samples is too small, you may need to use different time unit, in this case it is microseconds. More about [trim operation](https://wavebeans.io/docs/api/operations/trim-operation.html).
 * Line #4. The type of the output and the file to make output to. More about [CSV output](https://wavebeans.io/docs/api/outputs/csv-outputs.html)
 
-One thing to point out regarding the output, internally WaveBeans uses 64-bit floating point representation, and input signal is normalized to the range `[-1.0, 1.0]`, and this is what you would see in that file output. More about [Sample type](https://wavebeans.io/docs/api/readme.html#sample).
+One thing to point out regarding the output, internally WaveBeans uses 64-bit floating point representation, and input signal is normalized to the range `[-1.0, 1.0]`, and this is what you would see in that file output. More about [Sample type](https://wavebeans.io/docs/api/#sample).
 
 Using Sequence API with WaveBeans
 ------------

@@ -59,9 +59,9 @@ time ms,value
 Generate a complex sinusoid
 ------
 
-To generate a complex sinusoid we would need to start using [custom types](https://wavebeans.io/docs/api/readme.html#user-defined-type). Luckily the complex number is defined inside WaveBeans, and we may reuse it.
+To generate a complex sinusoid we would need to start using [custom types](https://wavebeans.io/docs/api/#user-defined-type). Luckily the complex number is defined inside WaveBeans, and we may reuse it.
 
-As this is mainly internal API it is not covered with documentation separately, however it is a part of [FFT Sample reference](https://wavebeans.io/docs/api/readme.html#fftsample).
+As this is mainly internal API it is not covered with documentation separately, however it is a part of [FFT Sample reference](https://wavebeans.io/docs/api/#fftsample).
 
 Complex sine is defined as function of 2 parameters `k` and `n`. The `k` parameter defines the index of the sinusoid out of `n` sinusoids.
 It uses [function definition as a class](https://wavebeans.io/docs/api/functions.html#function-as-class) to encapsulate that logic:
@@ -186,7 +186,7 @@ Explanation:
 * Line #5. Let's create `n` inputs via cycling through the range.
 * Line #6. As an input it is going to a complex sine defined above as function of `k` and `n`.
 * Line #7-10. Merge the generated complex sine with the `signal`. The merge operation is simple multiplication of Double number (`x`) and Complex Number (`sine`), it is defined by WaveBeans framework. Both operands are required to be not null, we assume the streams are aligned with the lengths. That helps to avoid handling different situations if streams are different lengths, which would only complicate things now.
-* Line #11. Windowing streams into groups of `n` samples. Though need to define the zero element function, which is just complex number `0+0i` in our case. More about [windows](https://wavebeans.io/docs/api/readme.html#window-of-any-type-t).
+* Line #11. Windowing streams into groups of `n` samples. Though need to define the zero element function, which is just complex number `0+0i` in our case. More about [windows](https://wavebeans.io/docs/api/#window-of-any-type-t).
 * Line #12-14. Each window created on previous step, needs to be converted into a sum of its elements. By calling Kotlin function `reduce()` we can do it nicely by collapsing a list of complex numbers into one complex number which is a sum of all. We wrap the single value as list, so later on they could be concatenated together into one big list.
 * Line #15-19. When all `n` inputs are created, they need to be summed up into one output. All inputs is just a list of streams of the type `List<BeanStream<List<ComplexNumber>>>`, for simplicity you may think it as `List<BeanStream<T>>`. We need to sum them up. For that purpose we'll use Kotlin `reduce()` function once again. As reduce operation we'll call `merge()` where our small lists will be concatenated together forming a bigger list. In other words, what it is simply does is, if let's say you have inputs `a`, `b` and `c`, the reduce function is just `a + b + c`, but it works for N different inputs.
 * Line #20. Previous operation made a single stream out of N similar streams. Need to get it ready for the output. With sample rate 1Hz and length of the input list N, we need exactly N sec to pass through the execution.
