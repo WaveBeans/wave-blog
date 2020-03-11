@@ -1,7 +1,7 @@
 Week 2. Discreate Fourier Transform
 ============
 
-The second week is about the base understanding of Discrete Fourier Transform. DFT is the first thing for a audio signal processing. That functionality is builtin into WaveBeans framework using [FFT](https://wavebeans.io/docs/api/operations/fft-operation.html), though it's useful to know how you may approach similar things which may not be implemented inside the framework.
+The second week of the course is about the base understanding of Discrete Fourier Transform. DFT is the first thing for a audio signal processing. That functionality is builtin into WaveBeans framework using [FFT](https://wavebeans.io/docs/api/operations/fft-operation.html), though it's useful to know how you may approach similar things which may not be implemented inside the framework.
 
 Generate a sinusoid
 -----
@@ -21,10 +21,10 @@ input { (idx, sampleRate) ->                  // 1
 ```
 
 Explanaton:
-* Line #1. We're going to use function as input functionality that allows as to create an input from any mathematical function. More to read in the [documentation](https://wavebeans.io/docs/api/inputs/function-as-input.html)
+* Line #1. We're going to use function as input functionality that allows as to create an input from any mathematical function. More to read in the [documentation](https://wavebeans.io/docs/api/inputs/function-as-input.html).
 * Lines #2-4. Define the input parameters of the sinusoid: frequency, amplitude and phase respectively.
 * Line #5. Calculate the time of the sample. The `idx` operand of the function contains the number of the sample being calculated, divided by sample rate of the stream we're calculating the time marker of the sample.
-* Line #6. According to the formula we're converting time into radians adding phase which is also in radians, getting the cosine value of it and multiply by the desired amplitude mapping `[-1, 1]` interval, that is produced by cosine function, into `[-a, a]`.
+* Line #6. According to the formula we're converting time into radians adding phase which is also in radians, getting the cosine value of it and multiply by the desired amplitude mapping `[-1, 1]` interval, that is produced by cosine function, into interval `[-a, a]`.
 * Line #7. Limit the output with the desired length using [trim operation](https://wavebeans.io/docs/api/operations/trim-operation.html). To get 5 samples with the sample rate of 50Hz, you need to set the limiter to 100ms.
 * Line #8. Store values into [CSV file](https://wavebeans.io/docs/api/outputs/csv-outputs.html).
 
@@ -46,7 +46,7 @@ To generate a complex sinusoid we would need to start using [custom types](https
 
 As this is mainly internal API it is not covered with documentation separately, however it is a part of [FFT Sample reference](https://wavebeans.io/docs/api/readme.html#fftsample).
 
-Complex sine is defined as function of 2 parameters `k` and `n`. The `k` parameter defines the number of the sinusoid out of `n` sinusoids.
+Complex sine is defined as function of 2 parameters `k` and `n`. The `k` parameter defines the index of the sinusoid out of `n` sinusoids.
 It uses [function definition as a class](https://wavebeans.io/docs/api/functions.html#function-as-class) to encapsulate that logic:
 
 ```kotlin
@@ -69,17 +69,15 @@ class GenerateComplexSineFn(params: FnInitParameters)                   // 1
 
 Explanation:
 * Line #1. Define the function name and provide default constuctor required by such functions.
-* Line #2. All functions should extend the `Fn<T, R>` class. The type parameter `T` is the input of the function and as it is going to be used as input it is a `Pair<Long, Float>`, which is number of the sample and sample rate respectively. The output type parameter `R` in our case is nullable complex number type `ComplexNumber?`, nullable because our future stream is finite.
-* Line #3. Convenience constructor that allows to encapsulate parameters propagation and leave the class API nice and readable.
-* Line #4. As the secondary constructor defined it calls the primary constructor specifying the parameters in a way it can be used by a function executor. More about it [here](https://wavebeans.io/docs/api/functions.html#fninitparameters). Both parameters `n` and `k` are stored under repesctive string keys.
+* Line #2. All functions should extend the `Fn<T, R>` class. The type parameter `T` is the input of the function and as it is going to be used as input it is a `Pair<Long, Float>`, which is index of the sample and sample rate respectively. The output type parameter `R` in our case is complex number type `ComplexNumber`, though it is defined as nullable, but we don't use it here, there sinusoid values are cycled.
+* Line #3. Convenience constructor which allows to encapsulate parameter propagation and leave the class API nice and readable.
+* Line #4. As the secondary constructor defined it calls the primary constructor specifying the parameters in a way it can be used by a function executor. More about it [here](https://wavebeans.io/docs/api/functions.html#fninitparameters). Both parameters `n` and `k` are stored under respective keys.
 * Line #5. The `Fn<T, R>` has only one function to implement which performs all work.
-* Line #6-7.  Extract `n` and `k` out of parameters and make it available via regular variables.
-* Line #8. For convenience, extract the first value of argument and store it under more convenient name. It is the number of the sample.
+* Line #6-7.  Extracting `n` and `k` out of parameters and making them available via regular variables.
+* Line #8. For convenience, extract the first value of argument and store it under more convenient name. It is the index of the sample.
 * Line #9-10. Calculate the complex sine. The `i` values is cycled to be not more than `n`.
 
-
-
-While the complex sine function is defined we can use it as an input and store it to CSV, however as the type we're using has no built-in CSV support, we need to define [the function that explains how to store it](https://wavebeans.io/docs/api/outputs/csv-outputs.html#user-defined-csv-output).
+When the complex sine function is defined, we can use it as an input and store it to CSV, however as the type we're using has no built-in CSV support, we need to define [the function that explains how to store it](https://wavebeans.io/docs/api/outputs/csv-outputs.html#user-defined-csv-output).
 
 ```kotlin
 val k = 1                                                        // 1
@@ -100,7 +98,7 @@ input(GenerateComplexSineFn(k, n))                               // 4
 
 Explanation:
 * Line #1-2. Define the values of `n` and `k` which are going to be used during the execution.
-* Line #3. Register the `ComplexNumber` we can do measures in time in limit the stream. One number has the length 1. More details [here](https://wavebeans.io/docs/api/operations/projection-operation.html#working-with-different-types).
+* Line #3. Register the `ComplexNumber` we can do measures in time while limiting the stream. One number has the length of 1. More details [here](https://wavebeans.io/docs/api/operations/projection-operation.html#working-with-different-types).
 * Line #4. Define the input as function using the class instance we've defined earlier.
 * Line #5. Limit the stream so it'll end at some point. If we execute the stream with sample rate 1Hz, to generate 5 samples we would need to generate 5 seconds of data.
 * Line #6. Start definition of the CSV output [with custom serialization](https://wavebeans.io/docs/api/outputs/csv-outputs.html#user-defined-csv-output).
@@ -122,7 +120,7 @@ index,value
 Discreate Fourier Transform calculation
 --------
 
-To calculate the DFT we need separately merge N sinusoids with the input signal. Despite the fact this is not the best approach to do this, let's try to do that straight away. The idea is to create N different inputs, merge them separately with the signal and then reduce down to one output. That is not the best idea because some work happens during configuration step while the stream is built but not when it's being executed. It is fine for certain use cases, but may kill any intent of using WaveBeans as a framework for distributed computations. See the pictire below to get a better understanding of the idea.
+To calculate the DFT we need separately merge N sinusoids with the input signal. Despite the fact this is not the best approach to do this, let's try to do that straight away. The idea is to create N different inputs, merge them separately with the signal and then reduce down to one output. That is not the best idea because some work happens during configuration step while the stream is built but not when it's being executed. It is fine for certain use cases, but may kill any intent of using WaveBeans as a framework for distributed computations. See the picture below to get a better understanding of the idea.
 
 ![DFT calculation stream schema](dft-calc.png "DFT calculation stream schema")
 
@@ -166,21 +164,21 @@ val signal = x.input()                                        // 4
 
 Explanation:
 * Line #1-2. Define the input signal as a list of numbers. Define the `n`. Input signal in that implementation can be any but its length should be divisible by `n`.
-* Line #3. The stream should be limited, at the time we're going to limit it, it'll have type `BeanStream<List<ComplexNumber>>`, and we need to measure somehow such stream. In this case we'll define the length as the list length. More details [here](https://wavebeans.io/docs/api/operations/projection-operation.html#working-with-different-types).
-* Line #4. Convert our list into the input. [TODO provide the link to documentation]
+* Line #3. The stream should be limited. At the time we cut it off, it'll have type `BeanStream<List<ComplexNumber>>`, and we need to measure somehow such stream. In this case we'll define the length as the list length. More details [here](https://wavebeans.io/docs/api/operations/projection-operation.html#working-with-different-types).
+* Line #4. Convert our [list into the input](https://wavebeans.io/docs/api/inputs/list-as-input.html).
 * Line #5. Let's create `n` inputs via cycling through the range.
 * Line #6. As an input it is going to a complex sine defined above as function of `k` and `n`.
-* Line #7-10. Merge the generated complex sine with the `signal`. The merge operation is simple multiplication of Double number (`x`) and Complex Number (`sine`), it is defined by WaveBeans framework. Both operands are required to be not null, assuming the streams are aligned with the lengths; that allows avoid handling different situations if streams are different lengths and need to define the behavior.
-* Line #11. Windowinf streams into groups of `n` samples, need to define the zero element function, which is just complex number `0+0i` in our case. More about [windows](https://wavebeans.io/docs/api/readme.html#window-of-any-type-t).
-* Line #12-14. Each window created on previous step we need to convert into a sum of its elements. By calling Kotlin function `reduce()` we can do it nicely by collapsing a list of complex number into one complex number which is a sum of all. We wrap the single value as list so later on they could be concatenated together into one big list.
-* Line #15-19. When all `n` inputs are created they need to be summed up into one output. All inputs is jast a list of streams the type is `List<BeanStream<List<ComplexNumber>>>`, for simplicity you may think it as `List<BeanStream<T>>`. We need to sum them up, for that purpose we'll use Kotlin `reduce()` function once again. As reduce operation we'll call `merge()` where our small lists will be concatenated together forming a bigger list. In other words, what it is simply does is, if you have inputs `a`, `b` and `c`, the reduce function is just `a + b + c`, but it works for N different inputs.
-* Line #20. Previous operation made a single stream out of N similar stream. Need to get it ready for the output. With sample rate 1Hz and length of the input list N we need exactly N sec to pass through the execution.
+* Line #7-10. Merge the generated complex sine with the `signal`. The merge operation is simple multiplication of Double number (`x`) and Complex Number (`sine`), it is defined by WaveBeans framework. Both operands are required to be not null, we assume the streams are aligned with the lengths. That helps to avoid handling different situations if streams are different lengths, which would only complicate things now.
+* Line #11. Windowing streams into groups of `n` samples. Though need to define the zero element function, which is just complex number `0+0i` in our case. More about [windows](https://wavebeans.io/docs/api/readme.html#window-of-any-type-t).
+* Line #12-14. Each window created on previous step, needs to be converted into a sum of its elements. By calling Kotlin function `reduce()` we can do it nicely by collapsing a list of complex numbers into one complex number which is a sum of all. We wrap the single value as list, so later on they could be concatenated together into one big list.
+* Line #15-19. When all `n` inputs are created, they need to be summed up into one output. All inputs is just a list of streams of the type `List<BeanStream<List<ComplexNumber>>>`, for simplicity you may think it as `List<BeanStream<T>>`. We need to sum them up. For that purpose we'll use Kotlin `reduce()` function once again. As reduce operation we'll call `merge()` where our small lists will be concatenated together forming a bigger list. In other words, what it is simply does is, if let's say you have inputs `a`, `b` and `c`, the reduce function is just `a + b + c`, but it works for N different inputs.
+* Line #20. Previous operation made a single stream out of N similar streams. Need to get it ready for the output. With sample rate 1Hz and length of the input list N, we need exactly N sec to pass through the execution.
 * Line #21-25. As in previous program, we define the CSV output [with custom serialization](https://wavebeans.io/docs/api/outputs/csv-outputs.html#user-defined-csv-output).
 
 Current implementation limitations:
-* The signal length must be divisible by `n`. It technically can be any, but that requires some improvement when the singal is being merged with the sinusoid.
+* The signal length must be divisible by `n`. It technically can be any, but that requires some improvement when the signal is being merged with the sinusoid.
 * For big `n` the stream might be cumbersome, though it may not be a big problem.
-* Generally the order of input evaluation are being evaluated is not guaranteed, hence the elements in the resulting list may be swapped. The input should be numbered and the resulting list during reduce should sort taking that into account. But that would increase the complexity of the demonstration. It's going to work pretty fine on local executor.
+* Generally the order of evaluation of inputs is not guaranteed, hence the elements in the resulting list may be swapped. The input should be numbered and the resulting list during reduce step should sort items taking that into account. But that would increase the complexity of the demonstration. It's going to work pretty fine on local executor.
 
 The output of that stream is like this: 
 
@@ -192,7 +190,7 @@ idx,DFT value
 Inverse Discreate Fourier Transform calculation
 -----------
 
-To calculate IDFT we'll use slightly different approach. The stream should be processed N times, so instead of generating a few inputs, we'll make the stream N times longer. Then group it into windows of length N, and merge with the separate stream of indices, so we would know what element of reversed complex sine we need to mix with. And when we know all that information calculate the IDFT abd provide the element into output. That makes any N elements on the input produce one element in the output. Follow the idea on the pciture below.
+To calculate IDFT we'll use slightly different approach. The stream should be processed N times, so instead of generating a few inputs, we'll make the stream N times longer. Then group it into windows of length N, and merge with the separate stream of indices, so we would know what element of reversed complex sine we need to mix with. And when we know all that information, we calculate the IDFT and provide the element into output. That makes any N elements on the input produce one element in the output. Follow the idea on the picture below.
 
 ![IDFT calculation stream schema](idft-calc.png "IDFT calculation stream schema")
 
@@ -236,8 +234,8 @@ Explanation:
 * Line #1-2. Define the input signal `x` and its length `n`.
 * Line #3. Repeat the signal `x` N times and store it one after another. This is done by calling the `map()` to list which creates list of lists, then it flattens into one long list. I.e. if `x = (a,b)`, then repeated list 2 times going to be `((a,b), (a,b))`, and when you flatten it - `(a, b, a, b)`.
 * Line #4. Generate the list of indices, the list containing the values between `0` and `n` exclusively.
-* Line #5-6. Start the [input based on the list](TODO) and group samples into groups of `n` samples, so effectively window contains the full signal.
-* Line #7. Start the indices stream and merge with windowed initial signal, so each window gets its corresponding index. In this case we're [merging streams of different types](TODO).
+* Line #5-6. Start the [input based on the list](https://wavebeans.io/docs/api/inputs/list-as-input.html) and group samples into groups of `n` samples, so effectively window contains the full signal.
+* Line #7. Start the indices stream and merge with windowed initial signal, so each window gets its corresponding index. In this case we're [merging streams of different types](https://wavebeans.io/docs/api/operations/merge-operation.html#using-with-two-different-input-types).
 * Line #8-9. Assuming our stream are aligned by length and we don't need to handle signal of different length, so none of operands are absent.
 * Line #10-13. Calculating the element based on formula `sum(X[k] * sineK[i]) / n`.
 * Line #14-18. As in previous program, we define the CSV output [with custom serialization](https://wavebeans.io/docs/api/outputs/csv-outputs.html#user-defined-csv-output).
@@ -284,7 +282,7 @@ fun dft(n: Int, x: List<Number>): BeanStream<List<ComplexNumber>> {
 
 It is just a copy of previous implementation so it won't be explained here.
 
-To calculate the magnitude spectrum we just need to add an additional operator call, we'll do that via [map operation](https://wavebeans.io/docs/api/operations/map-operation.html). The idea is for every complex number calcualte its absolute value. `ComplexNumber` type in WaveBeans has built-in function `abs()` that's doind that.
+To calculate the magnitude spectrum we just need to add an additional operator call, we'll do that via [map operation](https://wavebeans.io/docs/api/operations/map-operation.html). The idea is for every complex number calcualte its absolute value. `ComplexNumber` type in WaveBeans has built-in function `abs()` that's doing that.
 
 ```kotlin
 val x = listOf(1, 2, 3, 4)                                         // 1
@@ -306,7 +304,7 @@ dft(n, x)                                                          // 4
 Explanation:
 * Line #1-2. Define the input signal `x` and its length `n`.
 * Line #3-5. Call DFT calculation as explained in the approproate section above. Limit the output so with sample rate 1Hz the stream will evaluate exactly the length of the stream.
-* Line #6. For each element in the stream, and the element has type `List<ComplexNumber>`, though for each item in that list as well, we call `abs()` function that returns the absolut value of complex number. The resulting type of the stream is `BeanStream<List<Double>>`.
+* Line #6. For each element in the stream, and the element has type `List<ComplexNumber>`, though for each item in that list as well, we call `abs()` function that returns the absolute value of complex number. The resulting type of the stream is `BeanStream<List<Double>>`.
 * As in previous program, we define the CSV output [with custom serialization](https://wavebeans.io/docs/api/outputs/csv-outputs.html#user-defined-csv-output).
 
 The output would look like this:
@@ -321,6 +319,6 @@ Conclusion
 
 During that week we've learnt:
 * How to calculate DFT using WaveBeans framework.
-* Though it's not that valueable as WaveBeans has implementation of [FFT operation](https://wavebeans.io/docs/api/operations/fft-operation.html), the essential is the way how different formulas can be mapped to a stream calcualtion.
+* Though it's not that valueable as WaveBeans has implementation of [FFT operation](https://wavebeans.io/docs/api/operations/fft-operation.html), the essential is the way how different formulas can be mapped to a stream calculation.
 * How to work with custom types, and which types are implemented within WaveBeans framework.
 * How regular Kotlin Collections API can be mixed with WaveBeans stream API to achieve better results.
