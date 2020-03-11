@@ -1,6 +1,23 @@
 Week 2. Discreate Fourier Transform
 ============
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Overview](#overview)
+- [Generate a sinusoid](#generate-a-sinusoid)
+- [Generate a complex sinusoid](#generate-a-complex-sinusoid)
+- [Discreate Fourier Transform calculation](#discreate-fourier-transform-calculation)
+- [Inverse Discreate Fourier Transform calculation](#inverse-discreate-fourier-transform-calculation)
+- [Magnitude](#magnitude)
+- [Conclusion](#conclusion)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+Overview
+-----
+
 The second week of the course is about the base understanding of Discrete Fourier Transform. DFT is the first thing for a audio signal processing. That functionality is builtin into WaveBeans framework using [FFT](https://wavebeans.io/docs/api/operations/fft-operation.html), though it's useful to know how you may approach similar things which may not be implemented inside the framework.
 
 Generate a sinusoid

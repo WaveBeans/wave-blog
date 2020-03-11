@@ -1,7 +1,23 @@
-Audio Processing Course
+Kotlin project reference implementation
 =====
 
-This is an implementation of tasks of Audio Processing Course on coursera.org using the WaveBeans framework. That implementation cannot replace whatever is done for the sake of completing course, however gives an idea of another implementation of provided tasks using different approach.
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Usage](#usage)
+- [How it works](#how-it-works)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+Overview
+-----
+
+[GitHub link](https://github.com/WaveBeans/wave-blog/tree/master/audio-signal-processing-course/project)
+
+This is an implementation of tasks of [Audio Signal Processing course on Coursera](https://www.coursera.org/learn/audio-signal-processing) using the WaveBeans framework. That implementation cannot replace whatever is done for the sake of completing course, however gives an idea of another implementation of provided tasks using different approach.
 
 Please follow a better explanation in [related articles](../readme.md).
 

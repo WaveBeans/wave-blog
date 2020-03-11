@@ -1,6 +1,21 @@
 Week 1. Basics of Audio processing
 ============
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Overview](#overview)
+- [Reading wav-file](#reading-wav-file)
+- [Using Sequence API with WaveBeans](#using-sequence-api-with-wavebeans)
+- [Simple Downsampling](#simple-downsampling)
+- [Conlcusion](#conlcusion)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+Overview
+----------
+
 The first week of the course is about basic audio API. And this is what we'll try to cover here as well.
 
 Reading wav-file
