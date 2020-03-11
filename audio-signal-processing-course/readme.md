@@ -45,4 +45,4 @@ To use make sure the [CLI](https://wavebeans.io/docs/cli/readme.html) is install
 Kotlin project reference implementation
 ------
 
-The kotlin project is implemented using gradle. Follow [readme](https://github.com/WaveBeans/wave-blog/blob/audio-signal-processing/audio-signal-processing-course/project/README.md) file in the directory.
+The kotlin project is implemented using gradle. Follow [readme](https://github.com/WaveBeans/wave-blog/blob/master/audio-signal-processing-course/project/README.md) file in the directory.
