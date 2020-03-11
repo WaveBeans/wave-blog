@@ -16,13 +16,19 @@ Usage
 To run these example you need to clone the repository:
 
 ```bash
-git clone [TODO]
+git clone https://github.com/WaveBeans/wave-blog.git
 ```
 
-and run the following task via gradle *(it's better to use gradle wrapper)* specifying the main class parameter as one of the supported:
+Go to project directory:
+
+```bash
+cd wave-blog/audio-signal-processing-course/project
+```
+
+And run the following task via gradle *(it's better to use gradle wrapper)* specifying the main class parameter as one of the supported:
 
 ```kotlin
-gradlew run -PmainClass="week1.DownsamplingKt"
+./gradlew run -PmainClass="week1.DownsamplingKt"
 ```
 
 Supported main classes
@@ -35,6 +41,7 @@ Supported main classes
     * `week2.GenerateComplexSineKt` -- generates the complex sinusoid and stores it to CSV.
     * `week2.DftKt` -- calculates the Digital Fourier Transform over provided signal and stores results into CSV.
     * `week2.IdftKt` -- calculates the Inverse Digital Fourier Transform over provided signal and stores results into CSV.
+    * `week2.MagnitudeKt` -- calculates the magnitude based on previous DFT implementation.
 
 How it works
 ------
