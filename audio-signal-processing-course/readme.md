@@ -28,10 +28,10 @@ NOTE: to use this script with WaveBeans CLI tool, you would need to add `.out()`
 Content
 ------
 
-* [Week 1. Basics of audio processing](week1/readme.md)
+* [Week 1. Basics of audio processing](week1/)
     * [Bash Script reference implementation](https://github.com/WaveBeans/wave-blog/tree/master/audio-signal-processing-course/week1/scripts)
     * [Kotlin project reference implementaion](https://github.com/WaveBeans/wave-blog/tree/master/audio-signal-processing-course/project/src/main/kotlin/week1)
-* [Week 2. Discreate Fourier Transform](week2/readme.md)
+* [Week 2. Discreate Fourier Transform](week2/)
     * [Bash Script reference implementation](https://github.com/WaveBeans/wave-blog/tree/master/audio-signal-processing-course/week2/scripts)
     * [Kotlin project reference implementaion](https://github.com/WaveBeans/wave-blog/tree/master/audio-signal-processing-course/project/src/main/kotlin/week2)
 
