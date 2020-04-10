@@ -15,7 +15,6 @@
   - [Query and visualize](#query-and-visualize)
 - [Conclusion](#conclusion)
 - [Resources](#resources)
-- [Contacts](#contacts)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -465,6 +464,20 @@ During the course of this article we've learnt:
 ## Resources
 
 * [Repository with implemented Jupyter notebooks](TODO)
+* [Kotlin kernel for Jupyter GitHub project](https://github.com/Kotlin/kotlin-jupyter)
+* [Kotlin lets-plot API GitHub project](https://github.com/JetBrains/lets-plot-kotlin)
+* [Klaxon JSON parser GitHub project](https://github.com/cbeust/klaxon)
+* [About Fast Fourier Transform (FFT) on Wiki](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
+* [About Window function on Wiki](https://en.wikipedia.org/wiki/Window_function)
+
+
+<!-- 
+
+Version to add on external sites
+
+## Resources
+
+* [Repository with implemented Jupyter notebooks](TODO)
 * [WaveBeans documentation web-site](https://wavebeans.io)
 * [Kotlin kernel for Jupyter GitHub project](https://github.com/Kotlin/kotlin-jupyter)
 * [Kotlin lets-plot API GitHub project](https://github.com/JetBrains/lets-plot-kotlin)
@@ -478,4 +491,4 @@ If you have any questions or ideas do not hesitate to reach out.
 
 * [WaveBeans Github project](https://github.com/WaveBeans/wavebeans)
 * [Telegram channel `wavebeans`](https://t.me/wavebeans)
-* [Twitter @WaveBeans](https://twitter.com/wavebeans)
+* [Twitter @WaveBeans](https://twitter.com/wavebeans) -->
