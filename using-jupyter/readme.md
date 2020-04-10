@@ -19,7 +19,6 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-
 ## What's this all about?
 
 As you may already know, Kotlin may be used for solving [various data science tasks](https://kotlinlang.org/docs/reference/data-science-overview.html). The most essential tools interconnecting various tasks during research from performing calculations to visualization of results nowadays are so called Notebooks. [Jupyter](https://jupyter.org/) is one of the most popular and well-known. In this article we'll cover how to use [WaveBeans](https://wavebeans.io/) framework to solve different type of problems related to Audio Signal Processing.
