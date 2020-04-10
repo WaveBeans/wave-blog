@@ -27,7 +27,7 @@ Depending on the use case, you would need to use different execution mechanisms 
 
 ## Projects statuses
 
-At the time of writing of this article most of mentioned and crucial projects are in alpha state. Thus you should be very careful if you consider using them in production critical systems. Though all projects is worth to look at.
+At the time of writing of this article most of mentioned and crucial projects are in alpha state. You should be very careful if you consider using them in production critical systems. Though all projects are worth to look at.
 
 ## Prerequisites
 
@@ -73,35 +73,36 @@ Explanation:
 3. The next group installs JDK 8 and fixes certificates issues as they are not installed automatically. And finally propagate the `JAVA_HOME` environment variable for various use cases.
 4. The last action is to install the Kotlin kernel via `conda`.
 
-To build image let's invoke the `docker build` command tagging the image under `kotlin-jupyter` so we can easily access it later:
+To build image invoke the `docker build` command, and tag it (`-t`) with`kotlin-jupyter` so we can easily access it later:
 
 ```bash
 docker build -t kotlin-jupyter .
 ```
 
-It'll take time some, and once it finished we can `run` the image and access the Jupyter notebooks. The Jupyter UI can be access in the browser under address `http://localhost:8888`, though you'll be asked for a token which you can see in the console:
+It'll take time some, and once it finished we can `run` the image and access the Jupyter notebooks. The Jupyter UI can be access in the browser under address `http://localhost:8888`, though you'll be asked for a token which you would see in the console:
 
 ```bash
 docker run -it -p 8888:8888 -p 6800:6800 -v "$(pwd)"/notebooks:/home/jovyan/work kotlin-jupyter
 ```
 
-A few things require more explanation:
+A few things require more explanation about `run` command:
 1. `-it` flags (`i` and `t`) allows interaction with Jupyter process inside the docker, for example to stop execution of the notebook via `Ctrl-C` shortcut.
-2. `-p` flags are exposing two ports so they could be accessed in the browser, the `8888` is the notebook port, `6800` is the one we're going to use later to share the data. Actually you don't need it if you don't query data outside of your notebooks, but just keep in mind.
-3. `-v` flag specifies the volume mount, so our notebooks will be stored in our local filesystem under `notebooks` folder, and they won't be missed eventually.
+2. `-p` flags are exposing two ports so they could be accessed in the browser, the `8888` is the notebook port, `6800` is the one we're going to use later to share the data. Actually you don't need it if you don't query data outside of your notebooks, just keep that possibility in mind.
+3. `-v` flag specifies the volume mount, so our notebooks will be stored in our local filesystem under `notebooks` folder, and they won't get lost accidentally.
 4. And lastly, the image name `kotlin-jupyter`, which we've specified during the build.
 
 ## Preparing the notebook
 
 A few words about kotlin-kernel and what we need to do in order to get notebook ready for our further endeavors.
 
-* We'll be using [lets-plot](https://github.com/JetBrains/lets-plot) library for visualizations via its [Kotlin API](https://github.com/JetBrains/lets-plot-kotlin). Kotlin-kernel has built-in support for it, so need just specify it with `%` sign and `use` keyword at the beginning of the notebook:
+* We'll be using [lets-plot](https://github.com/JetBrains/lets-plot) library for visualizations via its [Kotlin API](https://github.com/JetBrains/lets-plot-kotlin). Kotlin-kernel has built-in support for it, so just specify it with `%` sign and `use` keyword in any cell before you actually start calling the API:
     
     ```jupyter
     %use lets-plot
     ```
 
 * In order to add WaveBeans as a dependency a few extra lines need to be added. We'll be using [version 0.0.3](https://wavebeans.io/wavebeans/release_notes.html#version-003-on-2020-04-03)
+    
     * Add repository to locate the artifact: 
     
         ```kotlin
@@ -127,20 +128,20 @@ A few words about kotlin-kernel and what we need to do in order to get notebook 
     import java.util.concurrent.TimeUnit.*
     ```
 
-Let's put it all into first cell and execute it.
+Let's put it all into the first cell and execute it. Once it is done proceed no the next chapter.
 
 ## Short signal: generate and visualize
 
 When the notebook is ready and has all API connected we can proceed forward. No extra dependencies or imports required.
 
-Firstly, let's define a signal we want to visualize. In our case it is going to be 1 second of the sum of 3 sinusoids of frequencies of 220 Hz, 440 Hz and 880 Hz.
+Firstly, let's define a signal we want to visualize. In our case it is going to be 1 second of the sum of 3 sinusoids of frequencies of 220, 440 and 880 Hz.
 
 ```kotlin
 val o = (880.sine() + 440.sine() + 220.sine())
     .trim(1000, MILLISECONDS)
 ```
 
-As we have only one stream and more it is finite and quite short there is no point executing it via overseers, we can just execute it as a [Kotlin sequence](https://wavebeans.io/docs/exe/#using-sequence). Let's execute it twice getting different parts of the same stream:
+As we have only one stream and more over it is finite and quite short there is no point executing it via overseers, we can just execute it as a [Kotlin sequence](https://wavebeans.io/docs/exe/#using-sequence). Let's execute it twice getting different parts of the same stream:
 
 ```kotlin
 val values = o.asSequence(44100.0f)
@@ -156,9 +157,9 @@ val values2 = o.asSequence(44100.0f)
     .toList() 
 ```
 
-Here we get the 400 samples but in the first case we drop 500 samples, in the second, 10 samples more.
+Here we get 400 samples but in the first case we skip first 500 samples, in the second, 10 samples more.
 
-Then we need to convert the data into a columnar Data Frame which understands the `lets_plot` library. The Kotlin type is `Map<String, List<Any>>`, where the key is column name, and value the list of of values to use.
+Then we need to convert the data into a columnar Data Frame which understands the `lets_plot` library. The Kotlin type is `Map<String, List<Any>>`, where the key is column name, and the value is the list of of values to use.
 
 ```kotlin
 val dataFrame = mapOf(
@@ -191,20 +192,20 @@ The result looks like this:
 
 Let's assume your signal takes a lot of time to process or it is simply infinite. That actually shouldn't stop you from getting sense what's going on in there while it is being evaluated. For that purpose we'll split the process into two notebooks: one to generate and share the data, another to query and visualize it. 
 
-The generator will store the data into [memory tables](https://wavebeans.io/docs/api/outputs/table-output.html) which will be available for querying via [HTTP Table Service API](https://wavebeans.io/docs/http/#table-service). The query part will use HTTP client to retrieve that data and visualize while the first streams are running.
+The generator will store the data into [memory tables](https://wavebeans.io/docs/api/outputs/table-output.html) which then will be available for querying via [HTTP Table Service API](https://wavebeans.io/docs/http/#table-service). The query part with the help of HTTP client retrieves that data and visualizes while the first streams are still in the processing.
 
 The exact example:
-1. Generate the signal, i.e. sum of three sinusoids with frequencies of 220Hz, 440Hz, and 880Hz.
-2. Perform the FFT but with two different window functions:
+1. Generate the signal, i.e. sum of three sinusoids with frequencies of 220, 440 and 880 Hz.
+2. Perform the Fast Fourier Transform (FFT) applying two different window functions:
     * Triangular
     * Hamming
-3. Store both FFTs and the Windows into tables so we could compare them graphically.
+3. Store both FFTs into tables so we could compare them visually.
 
 While visualizing we would see how the output is different depending on the parameters we've used.
 
 ### Generate and share
 
-The first part of this exercise is to start generation signal and storing it into memory tables. That requires a little more dependencies to add:
+The first part of this exercise is to start generation of signal and store it into memory tables. That requires a little more dependencies to add:
 
 * Additionally to WaveBeans API library need to add Execution API and HTTP Service:
 
@@ -213,7 +214,7 @@ The first part of this exercise is to start generation signal and storing it int
     @file:DependsOn("io.wavebeans:http:0.0.3")
     ```
 
-* Logging support. It is not required but would be helpful for some cases, you may no add it in the beginning, just keep in mind:
+* Logging support is not required but would be helpful for some cases, you may no add it in the beginning, just bare in mind:
 
     ```kotlin
     @file:DependsOn("ch.qos.logback:logback-classic:1.2.3")
@@ -222,7 +223,7 @@ The first part of this exercise is to start generation signal and storing it int
 
 *Note: Do not forget to register the WaveBeans repository.*
 
-Also the list of the imports is extended with HTTP and Execution imports, so add the following:
+Also the list of the imports is extended with HTTP and Execution imports, so add the following onto the list:
 
 ```kotlin
 import io.wavebeans.http.*
@@ -235,7 +236,7 @@ As it is required for us to share the data outside of the notebook, let's start 
 HttpService(serverPort = 6800).start()
 ```
 
-As the next step let's set up our streams. The initial signal is sum of sinusoids (220Hz, 440Hz and 880Hz), then it is begin windowed and the window function is applied. After that the FFT is performed and result is being stored into a memory table, so it'll be accessible for querying. The streams are infinite, but the table keeps only 2 minutes of data retiring everything older.
+As the next step let's set up our streams. The initial signal is sum of sinusoids (220Hz, 440Hz and 880Hz), then it is windowed and the window function is applied. After that the FFT is performed and result is being stored into a memory table, so it is accessible for querying. The streams are infinite, but the table keeps only last 2 minutes of data retiring everything out of this range.
 
 * Specify the parameters of future calculations:
     
@@ -280,7 +281,7 @@ val overseer = LocalDistributedOverseer(
 )
 ```
 
-And to start the evaluation, regular code to wait for success or handle errors, though in our case that code won't run as stream will run indefinitely if everything is fine:
+And to start the evaluation, regular code to wait for success or handle errors, though in our case that code won't run to the end if everything is running with no errors:
 
 ```kotlin
 val errors = overseer.eval(44100.0f)
@@ -297,11 +298,11 @@ if (errors.isEmpty()) {
 }
 ```
 
-We can run the notebook and switch to another browser tab to create a new notebook to visualize the streams.
+We can execute the notebook and switch to another browser tab to create a new notebook to visualize the streams.
 
 ### Query and visualize
 
-To visualize the data we will first request it over HTTP, deserialize it and remap it the way the plotting library required.
+To visualize the data we will first request it over HTTP, deserialize it and remap it the way the plotting library requires.
 
 * First of all dependencies. From built-in dependencies we need to add `lets-plot` library for charts and `klaxon` for JSON serialization.
 * For querying data we'll use java builtin client: `java.net.*`
@@ -317,7 +318,7 @@ import java.net.*
 import jetbrains.letsPlot.scale.*
 ```
 
-The next step would be to create a function that queries data over HTTP Table API. The data is provided in JSON format and needs to be mapped to an object. The table we're querying provide access to FFT Sample. Referring to the [documentation](https://wavebeans.io/docs/http/#fftsample-schema) on how that object is serialized, let's create a class we will instantiate to keep the FFT Samples:
+The next step would be to create a function that queries data over HTTP Table API. The data is provided in JSON format and needs to be mapped to an object. The table we're querying provide access to FFT Sample. Referring to the [documentation](https://wavebeans.io/docs/http/#fftsample-schema) on how that object is serialized, let's create a class to describe how tow parse the JSON objects:
 
 ```kotlin
 data class FftSample(
@@ -332,7 +333,7 @@ data class FftSample(
 )
 ```
 
-The data is being returned wrapped as a result container which we also need to define, it's much simpler, based on the [Table Service documentation](https://wavebeans.io/docs/http/#table-service) and keeps value of class we've just defined:
+The data is being returned wrapped as a result container which we also need to define. It's much simpler, based on the [Table Service documentation](https://wavebeans.io/docs/http/#table-service) and keeping the `value` as class we've just defined:
 
 ```kotlin
 data class Result(val offset: Long, val value: FftSample)
@@ -342,21 +343,23 @@ To query the data let's develop convenience function that'll do it for us. The f
 
 The parameters of this function are: 
 * `table` -- the name of the table the data is being stored to (`fft-triangular` or `fft-hamming`)
-* `freqCutOff` -- is pair of Integers that defines what range we want to keep (for range 100Hz-1000Hz `100 to 1000`)
+* `freqCutOff` -- is pair of Integers that defines what range we want to keep (i.e. for range 100Hz-1000Hz  it would look like a Pair `100 to 1000`)
 
 The algorithm of the function is as following:
 1. Query the data getting last 10 seconds, the result we read line by line. Each line is transformed to a `Result` object with the help of Klaxon library.
 2. Calculate the `timeShift` so all values would start with 0 on x-axis;
 3. Map the data represented as `List<Result>` to list of tuples (`List<Array<Any>>`) which then we map to a data frame. By the way, we'll cut off the frequencies we're not interested in. 
-4. Map the resulted list to a columnar view of type `Map<String, List<Any>>`
+4. Map the resulted list to a columnar data frame which has type `Map<String, List<Any>>`
 
-A little more explanation on the remapping solution. One FFT sample contains the time of the frame and amount of `FftSample.binCount` corresponding values of magnitude and frequency. For plotting the time needs to be duplicated for every magnitude and frequency pair. For example, that structure:
+A little more explanation on the remapping solution. Single FFT sample contains the time of the frame and amount of `FftSample.binCount` corresponding values of magnitude and frequency. For plotting the time needs to be duplicated for every magnitudes and frequencies pairs. For example, that structure:
 ```plain
-400: [ { 100.0, 0.2 },
+400: [ 
+       { 100.0, 0.2 },
        { 150.0, 0.4 },
        { 200.0, 0.2 }
      ],
-500: [ { 100.0, 0.3 },
+500: [ 
+       { 100.0, 0.3 },
        { 150.0, 0.1 },
        { 200.0, 0.1 }
      ]
@@ -368,15 +371,18 @@ must be remapped to such tuples
 { 400, 200.0, 0.2 },
 { 500, 100.0, 0.3 },
 { 500, 150.0, 0.1 },
-{ 500, 200.0, 0.1 },
+{ 500, 200.0, 0.1 }
 ```
 Then the final data map is formed of the lists made out of corresponding indexes of tuples.
 
 
-The code of function is as following:
+The code of the function listed below:
 
 ```kotlin
 fun fftData(table: String, freqCutOff: Pair<Int, Int>): Map<String, List<Any>> {
+    val k = Klaxon()
+    val server = "http://localhost:6800"
+
     // 1. read and deserializae the data
     val data = URL("$server/table/$table/last?interval=10s").openStream().reader().readLines()
     .map { k.parse<Result>(it)!! }
@@ -386,7 +392,7 @@ fun fftData(table: String, freqCutOff: Pair<Int, Int>): Map<String, List<Any>> {
     
     // 3. remap the FftSample to list of tuples
     val table = data.asSequence().map {v -> 
-            // magnitudes and frequrncies are making pairs like (10.0dB, 100hz), (20.0dB, 150Hz), etc
+            // magnitudes and frequencies are making pairs like (10.0dB, 100hz), (20.0dB, 150Hz), etc.
             v.value.magnitude.asSequence()
                 .zip(v.value.frequency.asSequence())
                 // filtering out frequencies out of the provided range
@@ -398,7 +404,7 @@ fun fftData(table: String, freqCutOff: Pair<Int, Int>): Map<String, List<Any>> {
                         it.first
                 )}
         }
-        // convert list of lists to just list
+        // convert list of lists to plain list
         .flatten()
         .toList() // this gives a list of tuples [ (time, freq, value), ... , (time, freq, value)]
 
@@ -413,7 +419,7 @@ fun fftData(table: String, freqCutOff: Pair<Int, Int>): Map<String, List<Any>> {
 }
 ```
 
-The last thing to do left is to call the newly made function and plot the result:
+The last thing is left to do, call the newly made function and plot the result:
 
 ```kotlin
 val df1 = fftData("fft-triangular", freqCutOff = 10 to 3800)
@@ -424,7 +430,17 @@ lets_plot(df1) {x = "time"; y = "freq"; fill = "value"} +
     scale_fill_gradient(low = "light_green", high = "red")
 ```
 
-Similar the another table `fft-hamming` is being queried and plotted. As a result you would see the spectrogram of the signals that is being process right now in the notebook running on a different tab. Also you would notice the difference between two window functions and how it affects the result.
+Similar the another table `fft-hamming` is being queried and plotted. 
+
+```kotlin
+val df2 = fftData("fft-hamming", freqCutOff = 10 to 3800)
+lets_plot(df2) {x = "time"; y = "freq"; fill = "value"} + 
+    ggsize(1000, 600) + 
+    geom_tile() + 
+    scale_fill_gradient(low = "light_green", high = "red")
+```
+
+As a result you would see the spectrogram of the signals that is being process right now in the notebook running on a different tab. Also you would notice the difference between two window functions and how it affects the result.
 
 **FFT Spectrogram with Triangular window function**
 
@@ -433,6 +449,18 @@ Similar the another table `fft-hamming` is being queried and plotted. As a resul
  **FFT Spectrogram with Hamming window function**
 
  ![FFT Spectrogram with Triangular window function](fft-hamming.png "FFT Spectrogram with Triangular window function")
+
+As you can see `hamming` window is more exact in detecting the frequencies in frequency domain, but probably in time domain or some other use case `triangular` would benefit of being not that exact.
+
+## Conclusion
+
+During the course of this article we've learnt:
+
+* The basics of using Kotlin with Data Science tool Jupyter.
+* How to use Jupyter Notebooks with WaveBeans in two different scenarios: short and long signal.
+* How to evaluate WaveBeans streams using different mechanism: sequence and multi-threaded mode.
+* How to use WaveBeans HTTP Table Service API to keep the data and then share it to use in external systems.
+* How different the FFT when applied different window functions over the same signal.
 
 ## Resources
 
