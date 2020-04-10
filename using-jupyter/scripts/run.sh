@@ -1,5 +1,5 @@
 HTTP_SERVICE_PORT=${1:-6800}
-LOCAL_MAVEN=${2:-true}
+LOCAL_MAVEN=${2:-false}
 
 MAVEN_REPO_VOLUME=
 if [ "$LOCAL_MAVEN" == "true" ]; then
