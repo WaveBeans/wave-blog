@@ -13,6 +13,7 @@
 - [Long signal](#long-signal)
   - [Generate and share](#generate-and-share)
   - [Query and visualize](#query-and-visualize)
+- [Conclusion](#conclusion)
 - [Resources](#resources)
 - [Contacts](#contacts)
 
