@@ -463,7 +463,7 @@ During the course of this article we've learnt:
 
 ## Resources
 
-* [Repository with implemented Jupyter notebooks](TODO)
+* [Repository with implemented Jupyter notebooks](https://github.com/WaveBeans/wave-blog/tree/master/using-jupyter/scripts)
 * [Kotlin kernel for Jupyter GitHub project](https://github.com/Kotlin/kotlin-jupyter)
 * [Kotlin lets-plot API GitHub project](https://github.com/JetBrains/lets-plot-kotlin)
 * [Klaxon JSON parser GitHub project](https://github.com/cbeust/klaxon)
@@ -477,7 +477,7 @@ Version to add on external sites
 
 ## Resources
 
-* [Repository with implemented Jupyter notebooks](TODO)
+* [Repository with implemented Jupyter notebooks](https://github.com/WaveBeans/wave-blog/tree/master/using-jupyter/scripts)
 * [WaveBeans documentation web-site](https://wavebeans.io)
 * [Kotlin kernel for Jupyter GitHub project](https://github.com/Kotlin/kotlin-jupyter)
 * [Kotlin lets-plot API GitHub project](https://github.com/JetBrains/lets-plot-kotlin)
