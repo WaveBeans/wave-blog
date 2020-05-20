@@ -63,14 +63,14 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 RUN export JAVA_HOME
 
 # Install kotlin kernel
-RUN conda install -c jetbrains kotlin-jupyter-kernel
+RUN conda install -c jetbrains kotlin-jupyter-kernel=0.7.3.10
 ```
 
 Explanation:
 1. The `jupyter/base-notebook` image is the base image, this is the first line in any Docker file.
 2. The base image is built with different user which doesn't have enough rights to perform further actions, so need to switch to using `root`.
 3. The next group installs JDK 8 and fixes certificates issues as they are not installed automatically. And finally propagate the `JAVA_HOME` environment variable for various use cases.
-4. The last action is to install the Kotlin kernel via `conda`.
+4. The last action is to install the Kotlin kernel via `conda`. Worth to mention here, the version is crucial at the moment, as there are changes pushed that are not completally stable.
 
 To build image invoke the `docker build` command, and tag it (`-t`) with`kotlin-jupyter` so we can easily access it later:
 
