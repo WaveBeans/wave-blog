@@ -25,7 +25,7 @@ As other the input parameters: we need to have a kick in point K where effect wi
 1. Let’s define the fade function X = f(K, D, x), where x is the integer sample number [0,..):
 2. The function should start changing the on a kick in point K, before that the signal should be 0, and should be at maximum when it is out of the interval D: if (x < K) 0 else if (x > K + D) 1 else /*do the calculation.*/
 The function kicks in on point K and calculates the values based on where we are in interval D: (x - K) / D
-The calculation above returns values way beyond desired interval [0, 1], as an extension we need to make sure fit if it is less than 0, then return just 0, if it is more than 1, use 1. Applying that trick won't require the check of where we are.
+3. The calculation above returns values way beyond desired interval [0, 1], as an extension we need to make sure fit if it is less than 0, then return just 0, if it is more than 1, use 1. Applying that trick won't require the check of where we are.
 
 ## Fade functions implementation
 
