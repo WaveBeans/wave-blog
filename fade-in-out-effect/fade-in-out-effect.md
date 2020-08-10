@@ -29,7 +29,7 @@ The calculation above returns values way beyond desired interval [0, 1], as an e
 
 ## Fade functions implementation
 
-We’ll implement the fade in function as an input so any signal may apply it while mixing it in. The function will use parameters in seconds, which we would need to convert before using. The sample code is below.
+We’ll implement the fade functions as [WaveBeans function as an input](https://wavebeans.io/docs/api/inputs/function-as-input.html) so any signal may use it by simply mixing it in. The function will use parameters in seconds, which we would need to convert before using to samples. The fade in function sample code is below.
 
 ```kotlin
 val fadeInMix = input { (sampleIndex, sampleRate) ->
