@@ -239,4 +239,4 @@ This implementation uses the `Fade` object, but it is just wraps the implementat
 ## Resources
 
 1. To play around with functionality you may use [WaveBeans extension of Jupyter with Kotlin](https://github.com/WaveBeans/jupyter-wave), which source code is available on GitHub.
-2. The notebook used for these article can be found here: [TODO]
+2. The notebook used for these article can be found in the [blog repository](https://github.com/WaveBeans/wave-blog/blob/fade-in-out/fade-in-out-effect/fade-in-out-nb.ipynb)
