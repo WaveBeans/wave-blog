@@ -202,7 +202,7 @@ class SilenceDetectorSpec : Spek({
                 }
                 .map(SignalMarkerFn(attackThreshold, noiseThreshold))
                 .toList(1000.0f, 8)
-                .also(::printWindowSample)
+                .also(::printSampleVector)
             assertThat(output).all {
                 index(0).signal().isEqualTo(OpenGateOutputSignal)
                 index(1).signal().isEqualTo(OpenGateOutputSignal)
@@ -231,7 +231,7 @@ class SilenceDetectorSpec : Spek({
                 }
                 .map(SignalMarkerFn(attackThreshold, noiseThreshold))
                 .toList(1000.0f, 8)
-                .also(::printWindowSample)
+                .also(::printSampleVector)
             assertThat(output).all {
                 index(0).signal().isEqualTo(CloseGateOutputSignal)
                 index(1).signal().isEqualTo(OpenGateOutputSignal)
@@ -250,12 +250,6 @@ class SilenceDetectorSpec : Spek({
 private fun printSampleVector(output: List<ManagedSampleVector>) {
     println(output.joinToString("\n") {
         "${it.payload.contentToString()} [${it.signal} ${it.argument}]"
-    })
-}
-
-private fun printWindowSample(output: List<ManagedWindowSample>) {
-    println(output.joinToString("\n") {
-        "${it.payload.elements} [${it.signal} ${it.argument}]"
     })
 }
 

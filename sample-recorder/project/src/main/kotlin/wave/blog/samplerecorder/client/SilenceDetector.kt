@@ -10,7 +10,6 @@ import io.wavebeans.lib.stream.window.window
 import mu.KotlinLogging
 import kotlin.math.absoluteValue
 
-typealias ManagedWindowSample = Managed<OutputSignal, Float, Window<Sample>>
 typealias ManagedSampleVector = Managed<OutputSignal, Float, SampleVector>
 typealias WindowIndexSampleRate = Pair<Window<Sample>, Pair<Long, Float>>
 
@@ -33,7 +32,7 @@ fun BeanStream<Sample>.detectSilence(
 }
 
 internal class SignalMarkerFn(initParameters: FnInitParameters) :
-    Fn<WindowIndexSampleRate, ManagedWindowSample>(initParameters) {
+    Fn<WindowIndexSampleRate, ManagedSampleVector>(initParameters) {
 
     constructor(attackThreshold: Double, noiseThreshold: Double) : this(
         FnInitParameters()
@@ -50,7 +49,7 @@ internal class SignalMarkerFn(initParameters: FnInitParameters) :
 
     private var log = KotlinLogging.logger { }
 
-    override fun apply(argument: WindowIndexSampleRate): ManagedWindowSample {
+    override fun apply(argument: WindowIndexSampleRate): ManagedSampleVector {
         val (window, indexAndSampleRate) = argument
         val (index, fs) = indexAndSampleRate
         val timeOffsetSec = (window.step * index) / fs
@@ -60,11 +59,62 @@ internal class SignalMarkerFn(initParameters: FnInitParameters) :
 
         val signalAttack = y.average()
         log.debug { "The cut off signal attack is $signalAttack (threshold=$attackThreshold), the signal is $y" }
-        return if (signalAttack < attackThreshold) {
-            window.withOutputSignal(CloseGateOutputSignal, timeOffsetSec)
-        } else {
-            window.withOutputSignal(OpenGateOutputSignal, timeOffsetSec)
+        return sampleVectorOf(window.step) { i, _ -> window.elements[i] }.withOutputSignal(
+            if (signalAttack < attackThreshold) CloseGateOutputSignal else OpenGateOutputSignal,
+            timeOffsetSec
+        )
+    }
+}
+
+internal class ChunkingFn : Fn<ManagedSampleVector, Iterable<ManagedSampleVector>>() {
+
+    private val log = KotlinLogging.logger { }
+
+    @Volatile
+    private var overlap: Int = 0
+
+    @Volatile
+    private var kickedIn: Boolean = false
+
+    override fun apply(argument: ManagedSampleVector): List<ManagedSampleVector> {
+        log.debug {
+            "Overlap=${overlap} Signal=${argument.signal}, Argument=${argument.argument}, " +
+                    "Payload=${argument.payload.contentToString()}"
         }
+        val vector = argument.payload
+        return listOf(
+            when {
+                argument.signal == OpenGateOutputSignal && overlap == 0 -> {
+                    log.debug { "It is a good signal samples" }
+                    kickedIn = true
+                    sampleVectorOf(vector.size) { i, _ -> vector[i] }
+                }
+                !kickedIn && argument.signal == CloseGateOutputSignal -> {
+                    log.debug { "The signal is not kicked in but silence detected. Skipping" }
+                    sampleVectorOf(vector.size) { _, _ -> ZeroSample }
+                }
+                kickedIn && argument.signal == CloseGateOutputSignal && overlap == 0 -> {
+                    overlap = vector.size - vector.size
+                    log.debug { "Starting the silence sequence. The calculated overlap is $overlap" }
+                    sampleVectorOf(vector.size) { _, _ -> ZeroSample }
+                }
+                kickedIn && overlap <= vector.size -> {
+                    log.debug { "Ending the silence sequence. The overlap is $overlap < step ${vector.size}" }
+                    sampleVectorOf(vector.size) { i, _ -> if (i < overlap) ZeroSample else vector[i] }
+                        .also { overlap = 0 }
+                }
+                kickedIn && overlap > vector.size -> {
+                    overlap -= vector.size
+                    log.debug { "Continuing the silence sequence. The remaining overlap is $overlap" }
+                    sampleVectorOf(vector.size) { _, _ -> ZeroSample }
+                }
+                else -> throw UnsupportedOperationException(
+                    "signal=${argument.signal}, kickedIn=$kickedIn, " +
+                            "overlap=$overlap, window.step=${vector.size}"
+                )
+            }.withOutputSignal(argument.signal, argument.argument)
+                .also { log.debug { "Returning payload=${it.payload.contentToString()}" } }
+        )
     }
 }
 
@@ -98,56 +148,4 @@ internal class NoiseGatingFn(initParameters: FnInitParameters) :
         )
     }
 
-}
-
-internal class ChunkingFn : Fn<ManagedWindowSample, Iterable<ManagedSampleVector>>() {
-
-    private val log = KotlinLogging.logger { }
-
-    @Volatile
-    private var overlap: Int = 0
-
-    @Volatile
-    private var kickedIn: Boolean = false
-
-    override fun apply(argument: ManagedWindowSample): List<ManagedSampleVector> {
-        log.debug {
-            "Overlap=${overlap} Signal=${argument.signal}, Argument=${argument.argument}, " +
-                    "Payload=${argument.payload.elements}"
-        }
-        val window = argument.payload
-        return listOf(
-            when {
-                argument.signal == OpenGateOutputSignal && overlap == 0 -> {
-                    log.debug { "It is a good signal samples" }
-                    kickedIn = true
-                    sampleVectorOf(window.step) { i, _ -> window.elements[i] }
-                }
-                !kickedIn && argument.signal == CloseGateOutputSignal -> {
-                    log.debug { "The signal is not kicked in but silence detected. Skipping" }
-                    sampleVectorOf(window.step) { _, _ -> ZeroSample }
-                }
-                kickedIn && argument.signal == CloseGateOutputSignal && overlap == 0 -> {
-                    overlap = window.size - window.step
-                    log.debug { "Starting the silence sequence. The calculated overlap is $overlap" }
-                    sampleVectorOf(window.step) { _, _ -> ZeroSample }
-                }
-                kickedIn && /*argument.signal == CloseGateOutputSignal &&*/ overlap <= window.step -> {
-                    log.debug { "Ending the silence sequence. The overlap is $overlap < step ${window.step}" }
-                    sampleVectorOf(window.step) { i, _ -> if (i < overlap) ZeroSample else window.elements[i] }
-                        .also { overlap = 0 }
-                }
-                kickedIn && /*argument.signal == CloseGateOutputSignal && */overlap > window.step -> {
-                    overlap -= window.step
-                    log.debug { "Continuing the silence sequence. The remaining overlap is $overlap" }
-                    sampleVectorOf(window.step) { _, _ -> ZeroSample }
-                }
-                else -> throw UnsupportedOperationException(
-                    "signal=${argument.signal}, kickedIn=$kickedIn, " +
-                            "overlap=$overlap, window.step=${window.step}"
-                )
-            }.withOutputSignal(argument.signal, argument.argument)
-                .also { log.debug { "Returning payload=${it.payload.contentToString()}" } }
-        )
-    }
 }
