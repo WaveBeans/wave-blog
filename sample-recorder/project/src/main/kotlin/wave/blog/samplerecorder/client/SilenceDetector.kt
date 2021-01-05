@@ -20,11 +20,12 @@ fun BeanStream<Sample>.detectSilence(
     noiseThreshold: Double = 0.05
 ): BeanStream<ManagedSampleVector> {
     require(sensitivity > 0.0 && sensitivity <= 1.0) { sensitivity > 0.0 && sensitivity <= 1.0 }
-    return this.window(silenceSize, (silenceSize * sensitivity).toInt())
+    val step = (silenceSize * sensitivity).toInt()
+    return this.window(silenceSize, step)
         .merge(input { it }) { (window, indexAndSampleRate) ->
-            requireNotNull(window)
             requireNotNull(indexAndSampleRate)
-            window to indexAndSampleRate
+            val w = window ?: Window.ofSamples(1, 1, (0..0).map { ZeroSample })
+            w to indexAndSampleRate
         }
         .map(SignalMarkerFn(attackThreshold, noiseThreshold))
         .flatMap(ChunkingFn())
@@ -59,7 +60,7 @@ internal class SignalMarkerFn(initParameters: FnInitParameters) :
 
         val signalAttack = y.average()
         log.debug { "The cut off signal attack is $signalAttack (threshold=$attackThreshold), the signal is $y" }
-        return sampleVectorOf(window.step) { i, _ -> window.elements[i] }.withOutputSignal(
+        return sampleVectorOf(window.step) { i, _ -> window.elements.getOrElse(i) { ZeroSample } }.withOutputSignal(
             if (signalAttack < attackThreshold) CloseGateOutputSignal else OpenGateOutputSignal,
             timeOffsetSec
         )
