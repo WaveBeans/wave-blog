@@ -13,7 +13,10 @@ import org.spekframework.spek2.style.specification.describe
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 import kotlin.math.sign
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
+@ExperimentalTime
 class SilenceDetectorSpec : Spek({
     describe("Out of made up short signal") {
         it("should detect signal at the beginning") {
@@ -178,6 +181,23 @@ class SilenceDetectorSpec : Spek({
 
             assertThat(output.flatMap { it.payload.toList() }).all {
                 timeRange(0.00, 1.00, sampleRate).each { it.isNotEqualTo(0.0) }
+            }
+        }
+    }
+
+    describe("Sequence signal") {
+        it("shouldn't change signal at all") {
+            val limit = 1_000_000
+            val (output, duration) = measureTimedValue {
+                input { (i, _) -> sampleOf(1e-6 * (i % 1_000_000)) }
+                    .detectSilence(1000, 0.1, attackThreshold = 1e-12, noiseThreshold = 1e-12)
+                    .toList(44100.0f, limit)
+            }
+            println("Duration for $limit samples is $duration")
+
+            val a = output.flatMap { it.payload.toList() }.toTypedArray()
+            (0 until limit).map { 1e-6 * (it % 1_000_000) }.forEachIndexed { i, v ->
+                assertThat(a[i], "element[$i]").isCloseTo(v, 1e-15)
             }
         }
     }

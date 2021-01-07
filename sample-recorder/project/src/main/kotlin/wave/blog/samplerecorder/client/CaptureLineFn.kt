@@ -5,6 +5,7 @@ import io.wavebeans.lib.io.ByteArrayLittleEndianDecoder
 import java.io.Closeable
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.FloatControl
 import javax.sound.sampled.TargetDataLine
 
 class CaptureLineFn(initParameters: FnInitParameters) : Fn<Pair<Long, Float>, SampleVector?>(initParameters),
@@ -13,7 +14,7 @@ class CaptureLineFn(initParameters: FnInitParameters) : Fn<Pair<Long, Float>, Sa
     constructor(
         sampleRate: Float,
         bitDepth: BitDepth,
-        deviceName: String,
+        deviceName: String
     ) : this(
         FnInitParameters()
             .add("sampleRate", sampleRate)
@@ -27,7 +28,11 @@ class CaptureLineFn(initParameters: FnInitParameters) : Fn<Pair<Long, Float>, Sa
 
     private val deviceName by lazy { initParameters.string("deviceName") }
 
-    private val mixer = AudioSystem.getMixer(AudioSystem.getMixerInfo().first { it.name == deviceName })
+    private val mixer = AudioSystem.getMixer(
+        AudioSystem.getMixerInfo().first {
+            it.name == deviceName && AudioSystem.getMixer(it).targetLineInfo.isNotEmpty()
+        }
+    )
 
     private val decoder = ByteArrayLittleEndianDecoder(bitDepth)
 
@@ -50,15 +55,16 @@ class CaptureLineFn(initParameters: FnInitParameters) : Fn<Pair<Long, Float>, Sa
         println("Info $info chosen")
 
         val line = AudioSystem.getLine(info) as TargetDataLine
-        line.open(format)
-
+        line.open(format, 512 * 1024)
         println("Line $line obtained")
+
         line.start()
+        println("Line $line started")
         line
     }
 
     override fun apply(argument: Pair<Long, Float>): SampleVector? {
-        val buffer = ByteArray(4096)
+        val buffer = ByteArray(4096 * bitDepth.bytesPerSample)
         var readBytes: Int
         val start = System.currentTimeMillis()
         do {
