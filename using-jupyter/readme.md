@@ -100,18 +100,12 @@ A few words about kotlin-kernel and what we need to do in order to get notebook 
     %use lets-plot
     ```
 
-* In order to add WaveBeans as a dependency a few extra lines need to be added. We'll be using [version 0.0.3](https://wavebeans.io/wavebeans/release_notes.html#version-003-on-2020-04-03)
+* In order to add WaveBeans as a dependency a few extra lines need to be added. We'll be using [version 0.3.0](https://wavebeans.io/wavebeans/release_notes.html#version-030-on-2021-01-02)
     
-    * Add repository to locate the artifact: 
-    
-        ```kotlin
-        @file:Repository("https://dl.bintray.com/wavebeans/wavebeans")
-        ```
-
     * Add dependency artifact:
 
         ```kotlin
-        @file:DependsOn("io.wavebeans:lib:0.0.3")
+        @file:DependsOn("io.wavebeans:lib:0.3.0")
         ```
 
 * Also it is useful to add all imports along with all dependencies, so all cells are clear of such non-relevant information. The exact list of imports we'll provide while dive deeper into specific cases, but generally you would have the following ones:
@@ -209,8 +203,8 @@ The first part of this exercise is to start generation of signal and store it in
 * Additionally to WaveBeans API library need to add Execution API and HTTP Service:
 
     ```kotlin
-    @file:DependsOn("io.wavebeans:exe:0.0.3")
-    @file:DependsOn("io.wavebeans:http:0.0.3")
+    @file:DependsOn("io.wavebeans:exe:0.3.0")
+    @file:DependsOn("io.wavebeans:http:0.3.0")
     ```
 
 * Logging support is not required but would be helpful for some cases, you may no add it in the beginning, just bare in mind:
@@ -270,10 +264,10 @@ As the next step let's set up our streams. The initial signal is sum of sinusoid
         .toTable("fft-hamming", 2.m)
     ```
 
-All outputs are defined. To execute them all in parallel need to use [local distributed overseer](https://wavebeans.io/docs/exe/#multi-threaded-mode), only it evaluates all streams in parallel:
+All outputs are defined. To execute them all in parallel need to use [multi-threaded overseer](https://wavebeans.io/docs/exe/#multi-threaded-mode), only it evaluates all streams in parallel:
 
 ```kotlin
-val overseer = LocalDistributedOverseer(
+val overseer = MultiThreadedOverseer(
     listOf(triangularFft, hammingFft), 
     threadsCount = 2,
     partitionsCount = 2
