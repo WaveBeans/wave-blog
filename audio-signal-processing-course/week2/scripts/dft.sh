@@ -28,7 +28,7 @@ class GenerateComplexSineFn(params: FnInitParameters)
 val x = listOf(1, 2, 3, 4)                                   
 val n = 4                                                    
 
-SampleCountMeasurement.registerType(List::class) { it.size } 
+SampleCountMeasurement.registerType(ComplexNumber::class) { 1 }
 
 val signal = x.input()                                     
 (0 until n).map { k ->                                     

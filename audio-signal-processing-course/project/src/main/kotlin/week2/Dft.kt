@@ -22,7 +22,7 @@ fun main() {
     val x = listOf(1, 2, 3, 4, 5, 6, 7, 8)
     val n = 4
 
-    SampleCountMeasurement.registerType(List::class) { it.size }
+    SampleCountMeasurement.registerType(ComplexNumber::class) { 1 }
     dft(n, x)
             .rangeProjection(0, x.size * 1000L)
             .toCsv(

@@ -8,7 +8,7 @@ import io.wavebeans.lib.stream.window.window
 import java.io.File
 
 fun main() {
-    val inputFile = "piano.wav"
+    val inputFile = "audio-signal-processing-course/project/piano.wav"
     val outputFile = "piano-downsampled.csv"
 
     val downsamplingFactor = 2

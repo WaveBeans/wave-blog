@@ -26,12 +26,6 @@ apply {
 repositories {
     jcenter()
     mavenCentral()
-    mavenLocal()
-    // WaveBeans is in separate maven repository
-    maven {
-        name = "Bintray WaveBeans"
-        url = uri("https://dl.bintray.com/wavebeans/wavebeans")
-    }
 }
 
 dependencies {
@@ -39,7 +33,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     // both wavebeans dependecies
-    val waveBeansVersion = "0.0.2-SNAPSHOT2"
+    val waveBeansVersion = "0.3.0"
     implementation("io.wavebeans:exe:$waveBeansVersion")
     implementation("io.wavebeans:lib:$waveBeansVersion")
 

@@ -5,7 +5,7 @@ import io.wavebeans.lib.stream.trim
 import java.io.File
 
 fun main() {
-    val inputFile = "piano.wav"
+    val inputFile = "audio-signal-processing-course/project/piano.wav"
 
     val M = 2
     val hopSamples = wave("file://${File(inputFile).absolutePath}")

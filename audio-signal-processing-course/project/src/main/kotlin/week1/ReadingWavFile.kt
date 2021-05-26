@@ -1,7 +1,6 @@
 package week1
 
 import evaluate
-import io.wavebeans.execution.LocalOverseer
 import io.wavebeans.lib.io.toCsv
 import io.wavebeans.lib.io.wave
 import io.wavebeans.lib.stream.rangeProjection
@@ -10,7 +9,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 fun main() {
-    val inputFile = "piano.wav"
+    val inputFile = "audio-signal-processing-course/project/piano.wav"
     val outputFile = "piano.csv"
 
     wave("file://${File(inputFile).absolutePath}")
