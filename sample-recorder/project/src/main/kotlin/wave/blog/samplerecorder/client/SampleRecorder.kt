@@ -9,7 +9,17 @@ import io.wavebeans.lib.stream.flatten
 import io.wavebeans.lib.stream.rangeTo
 import io.wavebeans.lib.stream.resample
 import io.wavebeans.lib.stream.trim
-import javax.sound.sampled.*
+import java.io.File
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import javax.sound.sampled.AudioSystem
+
+object Const {
+    val start: Long = System.currentTimeMillis() / 1000
+    val formatter: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+}
 
 fun main() {
     println("\nMixers:\n" + AudioSystem.getMixerInfo()
@@ -17,7 +27,6 @@ fun main() {
             val mixer = AudioSystem.getMixer(it)
 
             if (mixer.targetLineInfo.isNotEmpty()) {
-                fun Array<Line.Info>.string() = this
                 "${it.name} (${it.vendor}) v.${it.version}: ${it.description}\n" +
                         mixer.targetLineInfo.map { line -> mixer.getLine(line) }.joinToString("\n") { line ->
                             "\t\t${line.lineInfo}\n"
@@ -33,9 +42,12 @@ fun main() {
     val captureSampleRate = 44100.0f
     val outputSampleRate = 44100.0f
     val bitDepth = BitDepth.BIT_16
-    val deviceName = "USB AUDIO  CODEC"
-    val silenceLength = .5
-    val outputPath = "file:///users/asubb/tmp/wav/record.wav"
+    val deviceName = "iRig HD 2"
+    val silenceLength = 1.5
+    val dir = "/users/asubb/tmp/my_recordings/"
+    val outputPath = "file://${dir}record.wav"
+
+    File(dir).mkdirs()
 
     val silenceSize = (outputSampleRate * silenceLength).toInt() // 2 sec
     val o =
@@ -43,9 +55,16 @@ fun main() {
                 input(captureSampleRate, CaptureLineFn(captureSampleRate, bitDepth, deviceName)))
             .flatten()
             .resample()
-            .detectSilence(silenceSize, 0.3, attackThreshold = 0.0001, noiseThreshold = 0.005)
+            .detectSilence(silenceSize, 0.1, attackThreshold = 0.0001, noiseThreshold = 0.0005)
             .toMono16bitWav(outputPath) {
-                it?.let { String.format("%.5f", it) } ?: "0"
+                Const.formatter.format(
+                    ZonedDateTime.ofInstant(
+                        Instant.ofEpochSecond(
+                            Const.start + (it?.toLong() ?: 0)
+                        ),
+                        ZoneOffset.systemDefault()
+                    )
+                )
             }
 
     val overseer = SingleThreadedOverseer(listOf(o))

@@ -5,7 +5,6 @@ import io.wavebeans.lib.io.ByteArrayLittleEndianDecoder
 import java.io.Closeable
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
-import javax.sound.sampled.FloatControl
 import javax.sound.sampled.TargetDataLine
 
 class CaptureLineFn(initParameters: FnInitParameters) : Fn<Pair<Long, Float>, SampleVector?>(initParameters),
@@ -54,7 +53,7 @@ class CaptureLineFn(initParameters: FnInitParameters) : Fn<Pair<Long, Float>, Sa
 
         println("Info $info chosen")
 
-        val line = AudioSystem.getLine(info) as TargetDataLine
+        val line = AudioSystem.getTargetDataLine(format, mixer.mixerInfo)
         line.open(format, 512 * 1024)
         println("Line $line obtained")
 

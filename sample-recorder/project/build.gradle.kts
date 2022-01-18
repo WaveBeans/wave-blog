@@ -3,10 +3,7 @@ plugins {
 }
 repositories {
     jcenter()
-    maven {
-        name = "Bintray WaveBeans"
-        url = uri("https://dl.bintray.com/wavebeans/wavebeans")
-    }
+    mavenCentral()
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
@@ -19,9 +16,9 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:1.7.7")
     implementation("ch.qos.logback:logback-classic:1.2.3")
 
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.15")
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.15")
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.13")
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")
+    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.17")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
 }
 
 tasks.test {
@@ -29,4 +26,5 @@ tasks.test {
     useJUnitPlatform {
         includeEngines("spek2")
     }
+    maxHeapSize = "2g"
 }
